@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Colora Comuni Basilicata</title>
+    <script>
+        function coloraComuni() {
+            // 1. Definisci i colori per ciascun comune
+            const coloriComuni = {
+                "Potenza": "red",
+                "Matera": "green",
+                "Lauria": "blue",
+                // Aggiungi altri comuni e colori
+            };
+
+            // 2. Leggi il file KML
+            fetch("basilicata.kml")
+                .then(response => response.text())
+                .then(kmlString => {
+                    // 3. Analizza il file KML
+                    const parser = new DOMParser();
+                    const kml = parser.parseFromString(kmlString, "text/xml");
+
+                    // 4. Itera sui Placemark (comuni) nel file KML
+                    const placemarks = kml.querySelectorAll("Placemark");
+                    placemarks.forEach(placemark => {
+                        const comuneNome = placemark.querySelector("name").textContent;
+                        const comuneStyle = placemark.querySelector("Style");
+
+                        // 5. Applica il colore specificato al comune
+                        if (coloriComuni[comuneNome]) {
+                            const colore = coloriComuni[comuneNome];
+                            if (comuneStyle) {
+                                // Se esiste già uno stile, modifica il colore
+                                const polyStyle = comuneStyle.querySelector("PolyStyle");
+                                if (polyStyle) {
+                                    polyStyle.querySelector("color").textContent = coloreAColorKML(colore);
+                                }
+                            } else {
+                                // Se non esiste uno stile, creane uno nuovo
+                                const style = kml.createElement("Style");
+                                const polyStyle = kml.createElement("PolyStyle");
+                                const colorElement = kml.createElement("color");
+                                colorElement.textContent = coloreAColorKML(colore);
+                                polyStyle.appendChild(colorElement);
+                                style.appendChild(polyStyle);
+                                placemark.appendChild(style);
+                            }
+                        }
+                    });
+
+                    // 6. Aggiorna il file KML (opzionale)
+                    const serializer = new XMLSerializer();
+                    const updatedKmlString = serializer.serializeToString(kml);
+                    console.log(updatedKmlString); // Puoi salvare questo output in un nuovo file KML
+                });
+        }
+
+        // Funzione per convertire il colore in formato KML (AABBGGRR)
+        function coloreAColorKML(colore) {
+            const hex = {
+                "red": "7fff0000",
+                "green": "7f00ff00",
+                "blue": "7f0000ff",
+                "yellow": "7f00ffff",
+                "orange": "7f00a5ff",
+                // Aggiungi altri colori
+            };
+            return hex[colore] || "7fffffff"; // Bianco se il colore non è definito
+        }
+    </script>
+</head>
+<body onload="coloraComuni()">
+    <h1>Colora Comuni Basilicata</h1>
+    <p>I comuni della Basilicata verranno colorati in base ai colori specificati.</p>
+</body>
+</html>
