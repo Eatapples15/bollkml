@@ -6,16 +6,56 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src="https://unpkg.com/togeojson@0.16.1/togeojson.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         #map { height: 500px; }
-        .selezione-colore { margin-bottom: 10px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
     <h1>Mappa Comuni Basilicata (Selezione Colori Basi)</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Base</th>
+                <th>Colore</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>base_a1</td>
+                <td><input type="color" id="base_a1" value="#ff0000"></td>
+            </tr>
+            <tr>
+                <td>base_a2</td>
+                <td><input type="color" id="base_a2" value="#0000ff"></td>
+            </tr>
+            <tr>
+                <td>base_b</td>
+                <td><input type="color" id="base_b" value="#008000"></td>
+            </tr>
+            <tr>
+                <td>base_c</td>
+                <td><input type="color" id="base_c" value="#ffff00"></td>
+            </tr>
+            <tr>
+                <td>base_d</td>
+                <td><input type="color" id="base_d" value="#ffa500"></td>
+            </tr>
+            <tr>
+                <td>base_e1</td>
+                <td><input type="color" id="base_e1" value="#800080"></td>
+            </tr>
+            <tr>
+                <td>base_e2</td>
+                <td><input type="color" id="base_e2" value="#ffc0cb"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button onclick="generaMappa()">Genera Mappa</button>
+    <button onclick="generaPDF()">Genera PDF</button>
     <div id="map"></div>
-    <div id="selezioniColori"></div>
-    <button onclick="applicaColori()">Applica Colori</button>
 
     <script>
         let map = L.map('map').setView([40.6394, 16.1477], 8);
@@ -171,49 +211,42 @@
         };
         let coloriBase = {};
 
-        fetch('basilicata.kml')
-            .then(response => response.text())
-            .then(kmlString => {
-                let geojson = toGeoJSON.kml(new DOMParser().parseFromString(kmlString, 'text/xml'));
-                comuniLayer = L.geoJSON(geojson, {
-                    style: feature => ({
-                        fillColor: coloriComuni[comuniData[feature.properties.name]] || '#ffffff',
-                        weight: 1,
-                        opacity: 1,
-                        color: 'black',
-                        fillOpacity: 0.7
-                    })
-                }).addTo(map);
+        function generaMappa() {
+            for (let base in basiComuni) {
+                let colore = document.getElementById(base).value;
+                coloriBase[base] = colore;
+                basiComuni[base].forEach(comuneId => {
+                    coloriComuni[comuniData[comuneId]] = colore;
+                });
+            }
 
-                // Genera selezioni colore per ogni base
-                for (let base in basiComuni) {
-                    aggiungiSelezioneColore(base, basiComuni[base]);
-                }
-            });
-
-        function aggiungiSelezioneColore(baseNome, comuni) {
-            let selezioneColore = document.createElement('div');
-            selezioneColore.className = 'selezione-colore';
-            selezioneColore.innerHTML = `<label for="${baseNome}">Colore per ${baseNome}:</label><input type="color" id="${baseNome}" value="#ff0000"><button onclick="salvaColore('${baseNome}', '${comuni}')">Salva</button>`;
-            document.getElementById('selezioniColori').appendChild(selezioneColore);
+            fetch('basilicata.kml')
+                .then(response => response.text())
+                .then(kmlString => {
+                    let geojson = toGeoJSON.kml(new DOMParser().parseFromString(kmlString, 'text/xml'));
+                    comuniLayer = L.geoJSON(geojson, {
+                        style: feature => ({
+                            fillColor: coloriComuni[comuniData[feature.properties.name]] || '#ffffff',
+                            weight: 1,
+                            opacity: 1,
+                            color: 'black',
+                            fillOpacity: 0.7
+                        })
+                    }).addTo(map);
+                });
         }
 
-        function salvaColore(baseNome, comuni) {
-            let colore = document.getElementById(baseNome).value;
-            coloriBase[baseNome] = colore;
-            comuni.forEach(comuneId => {
-                coloriComuni[comuniData[comuneId]] = colore;
-            });
-        }
+        function generaPDF() {
+            let doc = new jspdf.jsPDF();
+            doc.text("Colori delle Basi:", 10, 10);
 
-        function applicaColori() {
-            comuniLayer.setStyle(feature => ({
-                fillColor: coloriComuni[comuniData[feature.properties.name]] || '#ffffff',
-                weight: 1,
-                opacity: 1,
-                color: 'black',
-                fillOpacity: 0.7
-            }));
+            let y = 20;
+            for (let base in coloriBase) {
+                doc.text(`${base}: ${coloriBase[base]}`, 10, y);
+                y += 10;
+            }
+
+            doc.save("colori_basi.pdf");
         }
     </script>
 </body>
