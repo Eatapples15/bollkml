@@ -4,6 +4,8 @@
     <title>Mappa Comuni Basilicata</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="https://unpkg.com/togeojson@0.16.1/togeojson.js"></script>
     <style>
         #map { height: 500px; }
     </style>
@@ -15,14 +17,146 @@
     <button onclick="applicaColori()">Applica Colori</button>
 
     <script>
-        let map = L.map('map').setView([40.6394, 16.1477], 8); // Centro sulla Basilicata
+        let map = L.map('map').setView([40.6394, 16.1477], 8);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         let comuniLayer;
         let coloriComuni = {};
-
+        let comuniData = {
+            "Gallicchio (76035)": "Gallicchio",
+            "Armento (76005)": "Armento",
+            "San Severino Lucano (76078)": "San Severino Lucano",
+            "Sant'Angelo Le Fratte (76079)": "Sant'Angelo Le Fratte",
+            "Terranova di Pollino (76088)": "Terranova di Pollino",
+            "Spinoso (76086)": "Spinoso",
+            "Lauria (76042)": "Lauria",
+            "Teana (76087)": "Teana",
+            "Trivigno (76093)": "Trivigno",
+            "Maschito (76047)": "Maschito",
+            "Oppido Lucano (76056)": "Oppido Lucano",
+            "Picerno (76059)": "Picerno",
+            "Sant'Arcangelo (76080)": "Sant'Arcangelo",
+            "San Chirico Nuovo (76073)": "San Chirico Nuovo",
+            "Vaglio Basilicata (76094)": "Vaglio Basilicata",
+            "Trecchina (76092)": "Trecchina",
+            "Valsinni (77030)": "Valsinni",
+            "Accettura (77001)": "Accettura",
+            "Salandra (77024)": "Salandra",
+            "Grumento Nova (76037)": "Grumento Nova",
+            "Cirigliano (77005)": "Cirigliano",
+            "Colobraro (77006)": "Colobraro",
+            "Muro Lucano (76053)": "Muro Lucano",
+            "Ripacandida (76067)": "Ripacandida",
+            "Satriano di Lucania (76083)": "Satriano di Lucania",
+            "Pisticci (77020)": "Pisticci",
+            "Rotonda (76070)": "Rotonda",
+            "Guardia Perticara (76038)": "Guardia Perticara",
+            "Laurenzana (76041)": "Laurenzana",
+            "Grassano (77011)": "Grassano",
+            "Aliano (77002)": "Aliano",
+            "Craco (77007)": "Craco",
+            "Calciano (77004)": "Calciano",
+            "Montemurro (76052)": "Montemurro",
+            "Noepoli (76055)": "Noepoli",
+            "Roccanova (76069)": "Roccanova",
+            "Gorgoglione (77010)": "Gorgoglione",
+            "Matera (77014)": "Matera",
+            "Montescaglioso (77017)": "Montescaglioso",
+            "Senise (76085)": "Senise",
+            "Sasso di Castalda (76082)": "Sasso di Castalda",
+            "Palazzo San Gervasio (76057)": "Palazzo San Gervasio",
+            "Potenza (76063)": "Potenza",
+            "Rapolla (76064)": "Rapolla",
+            "San Chirico Raparo (76074)": "San Chirico Raparo",
+            "San Costantino Albanese (76075)": "San Costantino Albanese",
+            "Tolve (76090)": "Tolve",
+            "Tramutola (76091)": "Tramutola",
+            "Maratea (76044)": "Maratea",
+            "Sarconi (76081)": "Sarconi",
+            "Melfi (76048)": "Melfi",
+            "Missanello (76049)": "Missanello",
+            "Moliterno (76050)": "Moliterno",
+            "Pietragalla (76060)": "Pietragalla",
+            "San Martino d'Agri (76077)": "San Martino d'Agri",
+            "Genzano di Lucania (76036)": "Genzano di Lucania",
+            "Rapone (76065)": "Rapone",
+            "Rionero in Vulture (76066)": "Rionero in Vulture",
+            "Nemoli (76054)": "Nemoli",
+            "Vietri di Potenza (76096)": "Vietri di Potenza",
+            "Tito (76089)": "Tito",
+            "Ruoti (76071)": "Ruoti",
+            "Marsico Nuovo (76045)": "Marsico Nuovo",
+            "Lavello (76043)": "Lavello",
+            "Pietrapertosa (76061)": "Pietrapertosa",
+            "Venosa (76095)": "Venosa",
+            "Pescopagano (76058)": "Pescopagano",
+            "Marsicovetere (76046)": "Marsicovetere",
+            "Ruvo del Monte (76072)": "Ruvo del Monte",
+            "Pignola (76062)": "Pignola",
+            "San Fele (76076)": "San Fele",
+            "Banzi (76009)": "Banzi",
+            "Brindisi Montagna (76014)": "Brindisi Montagna",
+            "Calvello (76015)": "Calvello",
+            "Latronico (76040)": "Latronico",
+            "San Giorgio Lucano (77025)": "San Giorgio Lucano",
+            "Nova Siri (77018)": "Nova Siri",
+            "Policoro (77021)": "Policoro",
+            "San Mauro Forte (77026)": "San Mauro Forte",
+            "Ferrandina (77008)": "Ferrandina",
+            "Tricarico (77028)": "Tricarico",
+            "Ginestra (76099)": "Ginestra",
+            "Miglionico (77015)": "Miglionico",
+            "Tursi (77029)": "Tursi",
+            "Paterno (76100)": "Paterno",
+            "Montalbano Jonico (77016)": "Montalbano Jonico",
+            "Pomarico (77022)": "Pomarico",
+            "Montemilone (76051)": "Montemilone",
+            "Grottole (77012)": "Grottole",
+            "Oliveto Lucano (77019)": "Oliveto Lucano",
+            "Rivello (76068)": "Rivello",
+            "Savoia di Lucania (76084)": "Savoia di Lucania",
+            "Garaguso (77009)": "Garaguso",
+            "Lagonegro (76039)": "Lagonegro",
+            "Rotondella (77023)": "Rotondella",
+            "Irsina (77013)": "Irsina",
+            "Bernalda (77003)": "Bernalda",
+            "Stigliano (77027)": "Stigliano",
+            "Scanzano Jonico (77031)": "Scanzano Jonico",
+            "Viggianello (76097)": "Viggianello",
+            "Viggiano (76098)": "Viggiano",
+            "Atella (76006)": "Atella",
+            "Castronuovo di Sant'Andrea (76026)": "Castronuovo di Sant'Andrea",
+            "Corleto Perticara (76029)": "Corleto Perticara",
+            "Acerenza (76002)": "Acerenza",
+            "Castelluccio Superiore (76023)": "Castelluccio Superiore",
+            "Filiano (76032)": "Filiano",
+            "Cancellara (76018)": "Cancellara",
+            "Castelmezzano (76024)": "Castelmezzano",
+            "Baragiano (76010)": "Baragiano",
+            "Barile (76011)": "Barile",
+            "Episcopia (76030)": "Episcopia",
+            "Calvera (76016)": "Calvera",
+            "Campomaggiore (76017)": "Campomaggiore",
+            "Carbone (76019)": "Carbone",
+            "Francavilla in Sinni (76034)": "Francavilla in Sinni",
+            "Castelsaraceno (76025)": "Castelsaraceno",
+            "Chiaromonte (76028)": "Chiaromonte",
+            "Cersosimo (76027)": "Cersosimo",
+            "Abriola (76001)": "Abriola",
+            "Albano di Lucania (76003)": "Albano di Lucania",
+            "Bella (76012)": "Bella",
+            "San Paolo Albanese (76020)": "San Paolo Albanese",
+            "Forenza (76033)": "Forenza",
+            "Brienza (76013)": "Brienza",
+            "Fardella (76031)": "Fardella",
+            "Castelgrande (76021)": "Castelgrande",
+            "Castelluccio Inferiore (76022)": "Castelluccio Inferiore",
+            "Avigliano (76007)": "Avigliano",
+            "Balvano (76008)": "Balvano",
+            "Anzi (76004)": "Anzi"
+        };
         fetch('basilicata.kml')
             .then(response => response.text())
             .then(kmlString => {
@@ -37,7 +171,6 @@
                     })
                 }).addTo(map);
 
-                // Genera selezioni colore
                 geojson.features.forEach(feature => {
                     aggiungiSelezioneColore(feature.properties.name);
                 });
