@@ -269,7 +269,7 @@
                 });
             }
 
-            fetch('basilicata.kml')
+            fetch('comuni_basilicata.kml')
                 .then(response => response.text())
                 .then(kmlString => {
                     let geojson = toGeoJSON.kml(new DOMParser().parseFromString(kmlString, 'text/xml'));
@@ -298,10 +298,19 @@
             doc.save("colori_basi.pdf");
         }
 
-        fetch('basilicata.kml')
-            .then(response => response.text())
+        fetch('comuni_basilicata.kml')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Errore HTTP! stato: ${response.status}`);
+                }
+                return response.text();
+            })
             .then(kmlString => {
                 let geojson = toGeoJSON.kml(new DOMParser().parseFromString(kmlString, 'text/xml'));
+                if (!geojson || !geojson.features || geojson.features.length === 0) {
+                    console.error('Errore: GeoJSON non valido o vuoto.');
+                    return;
+                }
                 comuniLayer = L.geoJSON(geojson, {
                     style: feature => ({
                         fillColor: '#ffffff', // Colore iniziale trasparente
@@ -311,6 +320,9 @@
                         fillOpacity: 0.5 // Trasparenza iniziale
                     })
                 }).addTo(map);
+            })
+            .catch(error => {
+                console.error('Errore durante il caricamento del file KML:', error);
             });
     </script>
 </body>
