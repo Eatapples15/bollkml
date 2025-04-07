@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mappa Comuni Basilicata</title>
+    <title>Mappa Comuni Basilicata (Selezione Colori Basi)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-    <h1>Mappa Comuni Basilicata</h1>
+    <h1>Mappa Comuni Basilicata (Selezione Colori Basi)</h1>
     <div id="map"></div>
     <div id="selezioniColori"></div>
     <button onclick="applicaColori()">Applica Colori</button>
@@ -169,6 +169,7 @@
             "76008": "Balvano",
             "76004": "Anzi"
         };
+        let coloriBase = {};
 
         fetch('basilicata.kml')
             .then(response => response.text())
@@ -199,6 +200,7 @@
 
         function salvaColore(baseNome, comuni) {
             let colore = document.getElementById(baseNome).value;
+            coloriBase[baseNome] = colore;
             comuni.forEach(comuneId => {
                 coloriComuni[comuniData[comuneId]] = colore;
             });
