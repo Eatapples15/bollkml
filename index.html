@@ -25,31 +25,80 @@
         <tbody>
             <tr>
                 <td>base_a1</td>
-                <td><input type="color" id="base_a1" value="#ff0000"></td>
+                <td>
+                    <select id="base_a1">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>base_a2</td>
-                <td><input type="color" id="base_a2" value="#0000ff"></td>
+                <td>
+                    <select id="base_a2">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>base_b</td>
-                <td><input type="color" id="base_b" value="#008000"></td>
+                <td>
+                    <select id="base_b">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>base_c</td>
-                <td><input type="color" id="base_c" value="#ffff00"></td>
+                <td>
+                    <select id="base_c">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>base_d</td>
-                <td><input type="color" id="base_d" value="#ffa500"></td>
+                <td>
+                    <select id="base_d">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>base_e1</td>
-                <td><input type="color" id="base_e1" value="#800080"></td>
+                <td>
+                    <select id="base_e1">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>base_e2</td>
-                <td><input type="color" id="base_e2" value="#ffc0cb"></td>
+                <td>
+                    <select id="base_e2">
+                        <option value="green">Verde - Assente</option>
+                        <option value="yellow">Giallo - Ordinario</option>
+                        <option value="orange">Arancione - Moderato</option>
+                        <option value="red">Rosso - Elevato</option>
+                    </select>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -149,105 +198,4 @@
             "76062": "Pignola",
             "76076": "San Fele",
             "76009": "Banzi",
-            "76014": "Brindisi Montagna",
-            "76015": "Calvello",
-            "76040": "Latronico",
-            "77025": "San Giorgio Lucano",
-            "77018": "Nova Siri",
-            "77021": "Policoro",
-            "77026": "San Mauro Forte",
-            "77008": "Ferrandina",
-            "77028": "Tricarico",
-            "76099": "Ginestra",
-            "77015": "Miglionico",
-            "77029": "Tursi",
-            "76100": "Paterno",
-            "77016": "Montalbano Jonico",
-            "77022": "Pomarico",
-            "76051": "Montemilone",
-            "77012": "Grottole",
-            "77019": "Oliveto Lucano",
-            "76068": "Rivello",
-            "76084": "Savoia di Lucania",
-            "77009": "Garaguso",
-            "76039": "Lagonegro",
-            "77023": "Rotondella",
-            "77013": "Irsina",
-            "77003": "Bernalda",
-            "77027": "Stigliano",
-            "77031": "Scanzano Jonico",
-            "76097": "Viggianello",
-            "76098": "Viggiano",
-            "76006": "Atella",
-            "76026": "Castronuovo di Sant'Andrea",
-            "76029": "Corleto Perticara",
-            "76002": "Acerenza",
-            "76023": "Castelluccio Superiore",
-            "76032": "Filiano",
-            "76018": "Cancellara",
-            "76024": "Castelmezzano",
-            "76010": "Baragiano",
-            "76011": "Barile",
-            "76030": "Episcopia",
-            "76016": "Calvera",
-            "76017": "Campomaggiore",
-            "76019": "Carbone",
-            "76034": "Francavilla in Sinni",
-            "76025": "Castelsaraceno",
-            "76028": "Chiaromonte",
-            "76027": "Cersosimo",
-            "76001": "Abriola",
-            "76003": "Albano di Lucania",
-            "76012": "Bella",
-            "76020": "San Paolo Albanese",
-            "76033": "Forenza",
-            "76013": "Brienza",
-            "76031": "Fardella",
-            "76021": "Castelgrande",
-            "76022": "Castelluccio Inferiore",
-            "76007": "Avigliano",
-            "76008": "Balvano",
-            "76004": "Anzi"
-        };
-        let coloriBase = {};
-
-        function generaMappa() {
-            for (let base in basiComuni) {
-                let colore = document.getElementById(base).value;
-                coloriBase[base] = colore;
-                basiComuni[base].forEach(comuneId => {
-                    coloriComuni[comuniData[comuneId]] = colore;
-                });
-            }
-
-            fetch('basilicata.kml')
-                .then(response => response.text())
-                .then(kmlString => {
-                    let geojson = toGeoJSON.kml(new DOMParser().parseFromString(kmlString, 'text/xml'));
-                    comuniLayer = L.geoJSON(geojson, {
-                        style: feature => ({
-                            fillColor: coloriComuni[comuniData[feature.properties.name]] || '#ffffff',
-                            weight: 1,
-                            opacity: 1,
-                            color: 'black',
-                            fillOpacity: 0.7
-                        })
-                    }).addTo(map);
-                });
-        }
-
-        function generaPDF() {
-            let doc = new jspdf.jsPDF();
-            doc.text("Colori delle Basi:", 10, 10);
-
-            let y = 20;
-            for (let base in coloriBase) {
-                doc.text(`${base}: ${coloriBase[base]}`, 10, y);
-                y += 10;
-            }
-
-            doc.save("colori_basi.pdf");
-        }
-    </script>
-</body>
-</html>
+            "
