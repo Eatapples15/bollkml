@@ -1,32 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Colora Comuni Basilicata</title>
+    <title>Colora Comuni Basilicata (Selezione Colori)</title>
     <script>
-        function coloraComuni() {
-            // 1. Definisci i colori per ciascun comune
-            const coloriComuni = {
-                "Potenza": "red",
-                "Matera": "green",
-                "Lauria": "blue",
-                // Aggiungi altri comuni e colori
-            };
+        let coloriComuni = {}; // Oggetto per memorizzare i colori dei comuni
 
-            // 2. Leggi il file KML
-            fetch("comuni_basilicata.kml")
+        function coloraComuni() {
+            // 1. Leggi il file KML
+            fetch("basilicata.kml")
                 .then(response => response.text())
                 .then(kmlString => {
-                    // 3. Analizza il file KML
+                    // 2. Analizza il file KML
                     const parser = new DOMParser();
                     const kml = parser.parseFromString(kmlString, "text/xml");
 
-                    // 4. Itera sui Placemark (comuni) nel file KML
+                    // 3. Itera sui Placemark (comuni) nel file KML
                     const placemarks = kml.querySelectorAll("Placemark");
                     placemarks.forEach(placemark => {
                         const comuneNome = placemark.querySelector("name").textContent;
                         const comuneStyle = placemark.querySelector("Style");
 
-                        // 5. Applica il colore specificato al comune
+                        // 4. Applica il colore selezionato al comune
                         if (coloriComuni[comuneNome]) {
                             const colore = coloriComuni[comuneNome];
                             if (comuneStyle) {
@@ -48,7 +42,7 @@
                         }
                     });
 
-                    // 6. Aggiorna il file KML (opzionale)
+                    // 5. Aggiorna il file KML (opzionale)
                     const serializer = new XMLSerializer();
                     const updatedKmlString = serializer.serializeToString(kml);
                     console.log(updatedKmlString); // Puoi salvare questo output in un nuovo file KML
@@ -63,14 +57,48 @@
                 "blue": "7f0000ff",
                 "yellow": "7f00ffff",
                 "orange": "7f00a5ff",
-                // Aggiungi altri colori
+                "purple": "7f800080",
+                "brown": "7fa52a2a",
+                "pink": "7fffc0cb",
+                "cyan": "7f00ffff",
+                "magenta": "7fff00ff"
             };
             return hex[colore] || "7fffffff"; // Bianco se il colore non è definito
         }
+
+        function aggiungiSelezioneColore(comuneNome) {
+            const selezioneColore = document.createElement("div");
+            selezioneColore.innerHTML = `<label for="${comuneNome}">Colore per ${comuneNome}:</label><input type="color" id="${comuneNome}" value="#ff0000"><button onclick="salvaColore('${comuneNome}')">Salva</button>`;
+            document.getElementById("selezioniColori").appendChild(selezioneColore);
+        }
+
+        function salvaColore(comuneNome) {
+            const colore = document.getElementById(comuneNome).value;
+            coloriComuni[comuneNome] = colore;
+        }
+
+        function generaSelezioniColori() {
+            // 1. Leggi il file KML
+            fetch("basilicata.kml")
+                .then(response => response.text())
+                .then(kmlString => {
+                    // 2. Analizza il file KML
+                    const parser = new DOMParser();
+                    const kml = parser.parseFromString(kmlString, "text/xml");
+
+                    // 3. Itera sui Placemark (comuni) nel file KML
+                    const placemarks = kml.querySelectorAll("Placemark");
+                    placemarks.forEach(placemark => {
+                        const comuneNome = placemark.querySelector("name").textContent;
+                        aggiungiSelezioneColore(comuneNome);
+                    });
+                });
+        }
     </script>
 </head>
-<body onload="coloraComuni()">
-    <h1>Colora Comuni Basilicata</h1>
-    <p>I comuni della Basilicata verranno colorati in base ai colori specificati.</p>
+<body onload="generaSelezioniColori()">
+    <h1>Colora Comuni Basilicata (Selezione Colori)</h1>
+    <div id="selezioniColori"></div>
+    <button onclick="coloraComuni()">Applica Colori</button>
 </body>
 </html>
